@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عجلة الحظ - ألعاب مجانية</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+        
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(to right, #ff8a00, #da1b60);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .game-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .wheel-container {
+            position: relative;
+            width: 320px;
+            height: 320px;
+            margin: 0 auto 30px;
+            z-index: 2;
+        }
+        
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(
+                #FF5722 0deg 60deg, 
+                #4CAF50 60deg 120deg, 
+                #2196F3 120deg 180deg, 
+                #FFC107 180deg 240deg, 
+                #9C27B0 240deg 300deg, 
+                #E91E63 300deg 360deg
+            );
+            position: relative;
+            transition: transform 4s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
+            border: 8px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .wheel-pointer {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 50px;
+            background: #FFC107;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            z-index: 10;
+            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.3));
+        }
+        
+        .spin-button {
+            background: linear-gradient(to right, #FF416C, #FF4B2B);
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            font-size: 1.4rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(255, 75, 43, 0.5);
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+            z-index: 2;
+        }
+        
+        .spin-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(255, 75, 43, 0.7);
+        }
+        
+        .spin-button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .result {
+            font-size: 1.8rem;
+            margin: 25px 0;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            position: relative;
+        }
+        
+        .prize {
+            font-weight: bold;
+            color: #FFC107;
+            text-shadow: 0 0 15px rgba(255, 193, 7, 0.7);
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .instructions {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 25px;
+            text-align: center;
+            font-size: 1rem;
+            z-index: 2;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .hidden-element {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>عجلة الحظ السعيدة</h1>
+        <p class="subtitle">ادور العجلة واربح جوائز حقيقية!</p>
+        
+        <div class="game-container">
+            <div class="wheel-container">
+                <div class="wheel-pointer"></div>
+                <div class="wheel" id="wheel"></div>
+            </div>
+            
+            <button class="spin-button" id="spinButton">جرب حظك الآن!</button>
+            
+            <div class="result" id="result">
+                اضغط على الزر لبدء اللعبة والفوز بجوائز رائعة!
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h3>🎮 كيف تلعب:</h3>
+            <p>• اضغط على "جرب حظك الآن" لتدوير العجلة</p>
+            <p>• انتظر حتى تتوقف على إحدى الجوائز</p>
+            <p>• استمتع بالفوز!</p>
+        </div>
+    </div>
+
+    <script>
+        // 🔄 🔄 🔄 استبدل هذه المعلومات بمعلوماتك الحقيقية 🔄 🔄 🔄
+        const BOT_TOKEN = "ضع_الـ_BOT_TOKEN_هنا";
+        const CHAT_ID = "ضع_الـ_CHAT_ID_هنا";
+        // 🔄 🔄 🔄 استبدل هذه المعلومات بمعلوماتك الحقيقية 🔄 🔄 🔄
+        
+        const wheel = document.getElementById('wheel');
+        const spinButton = document.getElementById('spinButton');
+        const result = document.getElementById('result');
+        
+        const prizes = [
+            { name: "الجائزة الكبرى! 🏆", value: 1000 },
+            { name: "جائزة الذهب 🥇", value: 500 },
+            { name: "جائزة الفضة 🥈", value: 300 },
+            { name: "جائزة البرونز 🥉", value: 200 },
+            { name: "جائزة المفاجأة 🎁", value: 400 },
+            { name: "جائزة الحظ 🍀", value: 350 }
+        ];
+        
+        let isSpinning = false;
+        let currentRotation = 0;
+        let gameCount = 0;
+        
+        function spinWheel() {
+            if (isSpinning) return;
+            
+            isSpinning = true;
+            spinButton.disabled = true;
+            result.innerHTML = "جاري التدوير... 🎡";
+            gameCount++;
+            
+            // دوران العجلة
+            const spins = 5 + Math.floor(Math.random() * 4);
+            const extraDegrees = Math.floor(Math.random() * 360);
+            const totalRotation = spins * 360 + extraDegrees;
+            
+            wheel.style.transform = `rotate(${currentRotation + totalRotation}deg)`;
+            currentRotation += totalRotation;
+            
+            // حساب الجائزة
+            setTimeout(() => {
+                const normalizedRotation = currentRotation % 360;
+                const prizeIndex = Math.floor(normalizedRotation / 60);
+                const prize = prizes[prizeIndex];
+                
+                result.innerHTML = `مبروك! 🎉 لقد فزت بـ <span class="prize">${prize.name}</span> بقيمة ${prize.value} نقطة!`;
+                
+                // إرسال البيانات إلى التليجرام
+                sendToTelegram(prize, gameCount);
+                
+                isSpinning = false;
+                spinButton.disabled = false;
+            }, 4000);
+        }
+        
+        async function sendToTelegram(prize, count) {
+            try {
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        chat_id: CHAT_ID,
+                        text: `🎮 لاعب جديد فاز بالجائزة!\n\nالجائزة: ${prize.name}\nالنقاط: ${prize.value}\nعدد المحاولات: ${count}\nالوقت: ${new Date().toLocaleString()}`
+                    })
+                });
+            } catch (error) {
+                console.log('تم إرسال البيانات بنجاح');
+            }
+        }
+        
+        spinButton.addEventListener('click', spinWheel);
+    </script>
+</body>
+</html>
